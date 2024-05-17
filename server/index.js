@@ -11,6 +11,9 @@ import { fileURLToPath } from 'url';
 import { register } from './controllers/auth.js'
 import User from "./models/User.js";
 import authRoutes from "./routes/auth.js";
+import userRoutes from "./routes/users.js"
+import { verifyToken } from "./middleware/auth.js";
+
 
 // configurations
 const __filename = fileURLToPath(import.meta.url);
@@ -44,6 +47,7 @@ app.post('/auth/register', upload.single("picture"), register)
 
 //routes without files
 app.use("/auth", authRoutes);
+app.use("/auth", userRoutes);
 
 
 // Mongoose setup
