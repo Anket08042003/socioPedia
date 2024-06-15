@@ -51,6 +51,21 @@ export const getUserPosts = async (req, res)=> {
     }
 }
 
+//delete
+
+export const deletePost = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deletedPost = await Post.findByIdAndDelete(id);
+      if (!deletedPost) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+      res.status(200).json({ success: true, message: "Post deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  };
+
 //update
 
 export const likePost = async (req, res) => {

@@ -3,6 +3,7 @@ import {
   FavoriteBorderOutlined,
   FavoriteOutlined,
   ShareOutlined,
+  DeleteOutline,
 } from "@mui/icons-material";
 import { Box, Divider, IconButton, Typography, useTheme } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
@@ -10,7 +11,7 @@ import Friend from "components/Friend";
 import WidgetWrapper from "components/WidgetWrapper";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setPost } from "state";
+import { setPost, deletePost } from "state";
 
 const PostWidget = ({
   postId,
@@ -22,6 +23,7 @@ const PostWidget = ({
   userPicturePath,
   likes,
   comments,
+  isProfile
 }) => {
   const [isComments, setIsComments] = useState(false);
   const dispatch = useDispatch();
@@ -46,6 +48,27 @@ const PostWidget = ({
     const updatedPost = await response.json();
     dispatch(setPost({ post: updatedPost }));
   };
+
+  const handleDelete = async () => {
+    try {
+        const response = await fetch(`http://localhost:3001/posts/${postId}`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        const result = await response.json();
+        if (result.success) {
+            // Dispatch action to update state in Redux
+            dispatch(deletePost({ postId })); // Ensure to pass postId if necessary
+            console.log("Post deleted successfully");
+        } else {
+            console.error("Failed to delete post");
+        }
+    } catch (error) {
+        console.error("Error deleting post:", error);
+    }
+};
 
   return (
     <WidgetWrapper m="2rem 0">
@@ -88,9 +111,16 @@ const PostWidget = ({
           </FlexBetween>
         </FlexBetween>
 
-        <IconButton>
-          <ShareOutlined />
-        </IconButton>
+        <FlexBetween gap="1rem">
+          <IconButton>
+            <ShareOutlined />
+          </IconButton>
+          {isProfile && (
+            <IconButton onClick={handleDelete}>
+              <DeleteOutline />
+            </IconButton>
+          )}
+        </FlexBetween>
       </FlexBetween>
       {isComments && (
         <Box mt="0.5rem">
