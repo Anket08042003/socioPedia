@@ -30,6 +30,8 @@ const PostWidget = ({
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
   const loggedInUserId = useSelector((state) => state.user._id);
+  const users = useSelector((state) => state.users);
+
   const isLiked = Boolean(likes[loggedInUserId]);
   const likeCount = Object.keys(likes).length;
 
@@ -130,7 +132,7 @@ const PostWidget = ({
           <IconButton>
             <ShareOutlined />
           </IconButton>
-          {isProfile && (
+          {postUserId===loggedInUserId && (
             <IconButton onClick={handleDelete}>
               <DeleteOutline />
             </IconButton>
@@ -139,14 +141,16 @@ const PostWidget = ({
       </FlexBetween>
       {isComments && (
         <Box mt="0.5rem">
-          {comments.map((comment, i) => (
-            <Box key={`${comment.userId}-${i}`} sx={{ display: 'flex', flexDirection: 'column' }}>
-              <Divider />
-              <Typography sx={{ color: main, m: "0.5rem 0", pl: "1rem" }}>
+          {comments.map((comment, i) => {
+            return (
+              <Box key={`${comment.userId}-${i}`} sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Divider />
+                <Typography sx={{ color: main, m: "0.5rem 0", pl: "1rem" }}>
                 {comment.comment}
-              </Typography>
-            </Box>
-          ))}
+                </Typography>
+              </Box>
+            );
+          })}
           <Divider />
           <form onSubmit={handleCommentSubmit}>
             <TextField
