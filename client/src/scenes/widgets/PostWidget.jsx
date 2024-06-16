@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
   ChatBubbleOutlineOutlined,
   FavoriteBorderOutlined,
@@ -5,11 +6,10 @@ import {
   ShareOutlined,
   DeleteOutline,
 } from "@mui/icons-material";
-import { Box, Divider, IconButton, Typography, useTheme } from "@mui/material";
+import { Box, Divider, IconButton, Typography, useTheme, TextField, Button } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
 import Friend from "components/Friend";
 import WidgetWrapper from "components/WidgetWrapper";
-import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPost, deletePost } from "state";
 
@@ -26,6 +26,7 @@ const PostWidget = ({
   isProfile
 }) => {
   const [isComments, setIsComments] = useState(false);
+  const [newComment, setNewComment] = useState('');
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
   const loggedInUserId = useSelector((state) => state.user._id);
@@ -59,8 +60,7 @@ const PostWidget = ({
         });
         const result = await response.json();
         if (result.success) {
-            // Dispatch action to update state in Redux
-            dispatch(deletePost({ postId })); // Ensure to pass postId if necessary
+            dispatch(deletePost({ postId }));
             console.log("Post deleted successfully");
         } else {
             console.error("Failed to delete post");
@@ -68,7 +68,22 @@ const PostWidget = ({
     } catch (error) {
         console.error("Error deleting post:", error);
     }
-};
+  };
+
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+    const response = await fetch(`http://localhost:3001/posts/${postId}/comment`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId: loggedInUserId, comment: newComment }),
+    });
+    const updatedPost = await response.json();
+    dispatch(setPost({ post: updatedPost }));
+    setNewComment('');
+  };
 
   return (
     <WidgetWrapper m="2rem 0">
@@ -125,14 +140,27 @@ const PostWidget = ({
       {isComments && (
         <Box mt="0.5rem">
           {comments.map((comment, i) => (
-            <Box key={`${name}-${i}`}>
+            <Box key={`${comment.userId}-${i}`} sx={{ display: 'flex', flexDirection: 'column' }}>
               <Divider />
               <Typography sx={{ color: main, m: "0.5rem 0", pl: "1rem" }}>
-                {comment}
+                {comment.comment}
               </Typography>
             </Box>
           ))}
           <Divider />
+          <form onSubmit={handleCommentSubmit}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              label="Add a comment"
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              sx={{ mt: "1rem" }}
+            />
+            <Button type="submit" variant="contained" sx={{ mt: "1rem" }}>
+              Comment
+            </Button>
+          </form>
         </Box>
       )}
     </WidgetWrapper>
