@@ -39,7 +39,7 @@ const Navbar = () => {
   const primaryLight = theme.palette.primary.light;
   const alt = theme.palette.background.alt;
 
-  const fullName = "Anket kadam";
+  const fullName = "Anket Kadam";
 
   return (
     <FlexBetween padding="1rem 6%" backgroundColor={alt}>
@@ -83,7 +83,9 @@ const Navbar = () => {
               <LightMode sx={{ color: dark, fontSize: "25px" }} />
             )}
           </IconButton>
-          <Message sx={{ fontSize: "25px" }} />
+          <IconButton onClick={() => navigate("/chat")}>
+            <Message sx={{ fontSize: "25px" }} />
+          </IconButton>
           <Notifications sx={{ fontSize: "25px" }} />
           <Help sx={{ fontSize: "25px" }} />
           <FormControl variant="standard" value={fullName}>
@@ -158,7 +160,9 @@ const Navbar = () => {
                 <LightMode sx={{ color: dark, fontSize: "25px" }} />
               )}
             </IconButton>
-            <Message sx={{ fontSize: "25px" }} />
+            <IconButton onClick={() => navigate("/chat")}>
+              <Message sx={{ fontSize: "25px" }} />
+            </IconButton>
             <Notifications sx={{ fontSize: "25px" }} />
             <Help sx={{ fontSize: "25px" }} />
             <FormControl variant="standard" value={fullName}>
